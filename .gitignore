@@ -1,0 +1,35 @@
+﻿# Binaries
+bin/
+obj/
+
+# User-specific files
+*.suo
+*.user
+*.userprefs
+*.usertasks
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+
+# Visual Studio files
+.vs/
+*.vscode/
+
+# NuGet packages
+*.nuget.cache
+*.dll
+*.exe
+*.pdb
+*.dll.config
+*.exe.config
+
+# Logs
+*.log
+logs/
+
+# Test Results
+TestResults/
+
+# Publish output
+publish/
