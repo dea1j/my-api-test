@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MAUIapi.Contracts;
+using MAUIapi.Context;
 using MAUIapi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,30 +13,30 @@ namespace MAUIapi.Controllers
     [ApiController]
     public class ImageController : ControllerBase
     {
-        private readonly IImageRepository _imageRepository;
+        private readonly ApplicationDbContext _context;
 
-        public ImageController(IImageRepository imageRepository)
+        public ImageController(ApplicationDbContext context)
         {
-            _imageRepository = imageRepository;
+            _context = context;
         }
 
         [HttpPost]
-        public async Task<ActionResult> UploadImage([FromBody] byte[] imageData)
+        public async Task<IActionResult> SaveImage([FromBody] string imagePath)
         {
-            try
+            if (string.IsNullOrEmpty(imagePath))
+                return BadRequest();
+
+            var image = new Image
             {
-                ImageEntity imageEntity = new ImageEntity
-                {
-                    ImageData = imageData,
-                    Timestamp = DateTime.UtcNow
-                };
-                await _imageRepository.UploadImage(imageEntity);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("Failed to upload image" + ex.Message);
-            }
+                Path = imagePath,
+                Timestamp = DateTime.Now
+            };
+
+            _context.Images.Add(image);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
+
     }
 }
