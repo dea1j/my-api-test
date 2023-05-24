@@ -9,6 +9,7 @@ namespace MAUIapi.Context
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         public DbSet<Image> Images { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 
 }

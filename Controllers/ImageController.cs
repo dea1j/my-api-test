@@ -6,6 +6,7 @@ using MAUIapi.Context;
 using MAUIapi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MAUIapi.Controllers
 {
@@ -20,23 +21,38 @@ namespace MAUIapi.Controllers
             _context = context;
         }
 
+
         [HttpPost]
-        public async Task<IActionResult> SaveImage([FromBody] string imagePath)
+        public IActionResult CreateUser([FromBody] User user)
         {
-            if (string.IsNullOrEmpty(imagePath))
-                return BadRequest();
-
-            var image = new Image
+            if (user == null)
             {
-                Path = imagePath,
-                Timestamp = DateTime.Now
-            };
+                return BadRequest("Invalid user data.");
+            }
 
-            _context.Images.Add(image);
-            await _context.SaveChangesAsync();
+            // Validate the user data
+            if (string.IsNullOrEmpty(user.Name) ||
+                string.IsNullOrEmpty(user.Phone) ||
+                string.IsNullOrEmpty(user.Address))
+            {
+                return BadRequest("Name, phone number, and address are required fields.");
+            }
 
-            return Ok();
+            try
+            {
+                // Save the user to the database
+
+                _context.Users.Add(user);
+                _context.SaveChanges();
+
+                // Return a success response
+                return Ok("User information saved to the database.");
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions and return an error response
+                return StatusCode(500, $"Failed to save user information: {ex.Message}");
+            }
         }
-
     }
 }
